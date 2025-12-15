@@ -3,9 +3,10 @@ class StudentDTO {
     this.id = data.ID;
     this.firstName = data.FirstName;
     this.lastName = data.LastName;
-    this.email = data.Email;
-    this.nfcTag = data.NFC_Tag;
+    this.gmail = data.Email;
+    this.nfc_Tag = data.NFC_Tag;
     this.level = data.Level;
+    this.departmentID = data.DepartmentID;
   }
 
   static validate(data) {

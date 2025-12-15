@@ -11,13 +11,21 @@ const Attendance = require("./Attendance");
 Department.hasMany(Student, { foreignKey: "DepartmentID" });
 Student.belongsTo(Department, { foreignKey: "DepartmentID" });
 
-Course.hasMany(Lecture, { foreignKey: "CourseID" });
+Course.hasMany(Lecture, {
+  foreignKey: "CourseID",
+  onDelete: "CASCADE",
+  hooks: true,
+});
 Lecture.belongsTo(Course, { foreignKey: "CourseID" });
 
 Student.hasMany(Enrolment, { foreignKey: "StudentID" });
 Enrolment.belongsTo(Student, { foreignKey: "StudentID" });
 
-Course.hasMany(Enrolment, { foreignKey: "CourseID" });
+Course.hasMany(Enrolment, {
+  foreignKey: "CourseID",
+  onDelete: "CASCADE",
+  hooks: true,
+});
 Enrolment.belongsTo(Course, { foreignKey: "CourseID" });
 
 Lecture.hasMany(Attendance, { foreignKey: "LectureID" });

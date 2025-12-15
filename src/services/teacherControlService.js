@@ -1,5 +1,4 @@
 const {
-  LectureSession,
   Lecture,
   Attendance,
   Student,
@@ -10,12 +9,6 @@ const AppError = require("../utils/AppError");
 
 class TeacherControlService {
   async openLecture(lectureId) {
-    // Check if session exists for today? Or just create new one?
-    // format.json says "Open a lecture for attendance."
-    // We'll create a new session or open the latest one.
-    // Let's create a new session for "now".
-
-    // First check if lecture exists
     const lecture = await Lecture.findByPk(lectureId);
     if (!lecture) throw new AppError("Lecture not found", 404);
     await lecture.update({ State: "Active" });
@@ -132,14 +125,6 @@ class TeacherControlService {
     const attendedStudentIds = attendances.map((a) => a.StudentID);
 
     return allStudents.filter((s) => !attendedStudentIds.includes(s.ID));
-  }
-
-  async blockStudent(studentId) {
-    const student = await Student.findByPk(studentId);
-    if (!student) throw new AppError("Student not found", 404);
-
-    await student.update({ IsBlocked: true });
-    return { message: "Student blocked" };
   }
 }
 

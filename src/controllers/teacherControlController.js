@@ -55,7 +55,7 @@ class TeacherControlController {
 
   async markAbsent(req, res, next) {
     try {
-      const { studentId, lectureId } = req.query;
+      const { studentId, lectureId } = req.body;
       await teacherControlService.markAbsent(studentId, lectureId);
       res.status(200).json({ message: "Student marked absent" });
     } catch (error) {
@@ -65,7 +65,7 @@ class TeacherControlController {
 
   async removeAttendance(req, res, next) {
     try {
-      const { studentId, lectureId } = req.query;
+      const { studentId, lectureId } = req.body;
       await teacherControlService.removeAttendance(studentId, lectureId);
       res.status(200).json({ message: "Attendance removed" });
     } catch (error) {
@@ -75,7 +75,7 @@ class TeacherControlController {
 
   async markLate(req, res, next) {
     try {
-      const { studentId, lectureId } = req.query;
+      const { studentId, lectureId } = req.body;
       await teacherControlService.markLate(studentId, lectureId);
       res.status(200).json({ message: "Student marked late" });
     } catch (error) {
