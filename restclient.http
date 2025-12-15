@@ -1,0 +1,6 @@
+POST https://college-attendance-production.up.railway.app/api/attendance/scan 
+content-type: application/json
+
+{
+  "nfcTag": "C44F2A8B"
+}

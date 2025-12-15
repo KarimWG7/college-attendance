@@ -21,7 +21,8 @@ class CourseController {
   async getAll(req, res, next) {
     try {
       const courses = await courseService.getAllCourses();
-      res.status(200).json(courses.map((c) => new CourseDTO(c)));
+      const coursesToSend = courses.map((c) => new CourseDTO(c));
+      res.status(200).json(coursesToSend);
     } catch (error) {
       next(error);
     }
@@ -63,6 +64,7 @@ class CourseController {
   async delete(req, res, next) {
     try {
       const { id } = req.params;
+      console.log(id);
       await courseService.deleteCourse(id);
       res.status(200).json({
         message: "Course deleted successfully",

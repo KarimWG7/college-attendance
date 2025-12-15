@@ -19,22 +19,13 @@ class TeacherControlService {
     // First check if lecture exists
     const lecture = await Lecture.findByPk(lectureId);
     if (!lecture) throw new AppError("Lecture not found", 404);
-
-    const session = await LectureSession.create({
-      LectureID: lectureId,
-      Date: new Date(),
-      State: "Open",
-      Code: "AUTO-" + Date.now(), // Generate a code if needed
-    });
-    return session;
+    await lecture.update({ State: "Active" });
+    return lecture;
   }
 
   async closeLecture(lectureId) {
     // Close all open sessions for this lecture
-    await LectureSession.update(
-      { State: "Closed" },
-      { where: { LectureID: lectureId, State: "Open" } }
-    );
+    await lecture.update({ State: "Closed" }, { where: { LectureID } });
     return { message: "Lecture closed successfully" };
   }
 

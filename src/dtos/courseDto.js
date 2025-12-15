@@ -2,6 +2,9 @@ class CourseDTO {
   constructor(data) {
     this.id = data.ID;
     this.name = data.Name;
+    this.instructorID = data.InstructorID;
+    this.level = data.Level;
+    this.code = data.Code;
   }
 
   static validate(data) {
@@ -14,6 +17,9 @@ class CourseDTO {
     }
     return {
       Name: data.name.trim(),
+      Code: data.code.trim(),
+      Level: data.level,
+      InstructorID: data.instructorID,
     };
   }
 }

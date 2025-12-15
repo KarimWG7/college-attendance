@@ -19,6 +19,7 @@ class LectureController {
       };
 
       const validatedData = LectureDTO.validate(mappedData);
+      console.log(validatedData);
       await lectureService.createLecture(validatedData);
 
       res.status(201).json({

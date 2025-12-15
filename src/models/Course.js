@@ -11,19 +11,16 @@ const Course = sequelize.define(
     },
     Name: {
       type: DataTypes.STRING(50),
-      allowNull: true,
     },
     Code: {
       type: DataTypes.STRING(20),
-      allowNull: true,
+      unique: true,
     },
     InstructorID: {
       type: DataTypes.INTEGER,
-      allowNull: true,
     },
     Level: {
       type: DataTypes.INTEGER,
-      allowNull: true,
     },
   },
   {
