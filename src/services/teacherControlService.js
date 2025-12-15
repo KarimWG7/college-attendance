@@ -6,7 +6,6 @@ const {
   Enrolment,
   Course,
 } = require("../models");
-const { Op } = require("sequelize");
 const AppError = require("../utils/AppError");
 
 class TeacherControlService {
@@ -25,8 +24,10 @@ class TeacherControlService {
 
   async closeLecture(lectureId) {
     // Close all open sessions for this lecture
-    await lecture.update({ State: "Closed" }, { where: { LectureID } });
-    return { message: "Lecture closed successfully" };
+    const lecture = await Lecture.findByPk(lectureId);
+    if (!lecture) throw new AppError("Lecture not found", 404);
+    await lecture.update({ State: "Closed" });
+    return lecture;
   }
 
   async changeRoom(lectureId, room) {
