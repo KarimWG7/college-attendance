@@ -31,7 +31,11 @@ Enrolment.belongsTo(Course, { foreignKey: "CourseID" });
 Lecture.hasMany(Attendance, { foreignKey: "LectureID" });
 Attendance.belongsTo(Lecture, { foreignKey: "LectureID" });
 
-Student.hasMany(Attendance, { foreignKey: "StudentID" });
+Student.hasMany(Attendance, {
+  foreignKey: "StudentID",
+  onDelete: "CASCADE",
+  hooks: true,
+});
 Attendance.belongsTo(Student, { foreignKey: "StudentID" });
 
 module.exports = {
