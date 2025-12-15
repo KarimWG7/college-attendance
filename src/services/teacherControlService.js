@@ -1,0 +1,154 @@
+const {
+  LectureSession,
+  Lecture,
+  Attendance,
+  Student,
+  Enrolment,
+  Course,
+} = require("../models");
+const { Op } = require("sequelize");
+const AppError = require("../utils/AppError");
+
+class TeacherControlService {
+  async openLecture(lectureId) {
+    // Check if session exists for today? Or just create new one?
+    // format.json says "Open a lecture for attendance."
+    // We'll create a new session or open the latest one.
+    // Let's create a new session for "now".
+
+    // First check if lecture exists
+    const lecture = await Lecture.findByPk(lectureId);
+    if (!lecture) throw new AppError("Lecture not found", 404);
+
+    const session = await LectureSession.create({
+      LectureID: lectureId,
+      Date: new Date(),
+      State: "Open",
+      Code: "AUTO-" + Date.now(), // Generate a code if needed
+    });
+    return session;
+  }
+
+  async closeLecture(lectureId) {
+    // Close all open sessions for this lecture
+    await LectureSession.update(
+      { State: "Closed" },
+      { where: { LectureID: lectureId, State: "Open" } }
+    );
+    return { message: "Lecture closed successfully" };
+  }
+
+  async changeRoom(lectureId, room) {
+    const lecture = await Lecture.findByPk(lectureId);
+    if (!lecture) throw new AppError("Lecture not found", 404);
+
+    await lecture.update({ Room: room });
+    return lecture;
+  }
+
+  async forceAttendance(studentId, lectureId) {
+    // Manually mark present
+    // Check if already exists
+    const existing = await Attendance.findOne({
+      where: { StudentID: studentId, LectureID: lectureId },
+    });
+
+    if (existing) {
+      await existing.update({ Status: "Present", ScanTime: new Date() });
+      return existing;
+    }
+
+    return await Attendance.create({
+      StudentID: studentId,
+      LectureID: lectureId,
+      ScanTime: new Date(),
+      Status: "Present",
+    });
+  }
+
+  async markAbsent(studentId, lectureId) {
+    const existing = await Attendance.findOne({
+      where: { StudentID: studentId, LectureID: lectureId },
+    });
+
+    if (existing) {
+      await existing.update({ Status: "Absent" });
+      return existing;
+    }
+
+    return await Attendance.create({
+      StudentID: studentId,
+      LectureID: lectureId,
+      ScanTime: new Date(),
+      Status: "Absent",
+    });
+  }
+
+  async removeAttendance(studentId, lectureId) {
+    const existing = await Attendance.findOne({
+      where: { StudentID: studentId, LectureID: lectureId },
+    });
+
+    if (existing) {
+      await existing.destroy();
+    }
+    return { message: "Attendance removed" };
+  }
+
+  async markLate(studentId, lectureId) {
+    const existing = await Attendance.findOne({
+      where: { StudentID: studentId, LectureID: lectureId },
+    });
+
+    if (existing) {
+      await existing.update({ Status: "Late", ScanTime: new Date() });
+      return existing;
+    }
+
+    return await Attendance.create({
+      StudentID: studentId,
+      LectureID: lectureId,
+      ScanTime: new Date(),
+      Status: "Late",
+    });
+  }
+
+  async getPresentStudents(lectureId) {
+    const attendances = await Attendance.findAll({
+      where: { LectureID: lectureId, Status: "Present" },
+      include: [Student],
+    });
+    return attendances.map((a) => a.Student);
+  }
+
+  async getAbsentStudents(lectureId) {
+    // Get all enrolled students minus those who are present/late
+    const lecture = await Lecture.findByPk(lectureId);
+    if (!lecture) throw new AppError("Lecture not found", 404);
+
+    const enrolments = await Enrolment.findAll({
+      where: { CourseID: lecture.CourseID },
+      include: [Student],
+    });
+
+    const allStudents = enrolments.map((e) => e.Student);
+
+    const attendances = await Attendance.findAll({
+      where: { LectureID: lectureId },
+    });
+
+    const attendedStudentIds = attendances.map((a) => a.StudentID);
+
+    return allStudents.filter((s) => !attendedStudentIds.includes(s.ID));
+  }
+
+  async blockStudent(studentId) {
+    const student = await Student.findByPk(studentId);
+    if (!student) throw new AppError("Student not found", 404);
+
+    await student.update({ IsBlocked: true });
+    return { message: "Student blocked" };
+  }
+}
+
+module.exports = new TeacherControlService();
