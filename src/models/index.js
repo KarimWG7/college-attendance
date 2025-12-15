@@ -18,7 +18,11 @@ Course.hasMany(Lecture, {
 });
 Lecture.belongsTo(Course, { foreignKey: "CourseID" });
 
-Student.hasMany(Enrolment, { foreignKey: "StudentID" });
+Student.hasMany(Enrolment, {
+  foreignKey: "StudentID",
+  onDelete: "CASCADE",
+  hooks: true,
+});
 Enrolment.belongsTo(Student, { foreignKey: "StudentID" });
 
 Course.hasMany(Enrolment, {
